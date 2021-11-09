@@ -4,6 +4,7 @@ import urllib.parse
 import json
 import base64
 from typing import Callable
+import os
 
 from django.conf import settings
 from django.core.cache import cache
@@ -112,6 +113,20 @@ class ClientProtocolMixin:
             options['desktopheight:i'] = height
         else:
             options['smart sizing:i'] = '1'
+
+        options['session bpp:i'] = os.getenv('JUMPSERVER_COLOR_DEPTH', '32')
+        options['audiomode:i'] = '2' if is_true(os.getenv('JUMPSERVER_DISABLE_AUDIO', 'false')) else '0'
+        options['disable wallpaper:i'] = '0' if is_true(os.getenv('JUMPSERVER_ENABLE_WALLPAPER', 'true')) else '1'
+        options['disable themes:i'] = '0' if is_true(os.getenv('JUMPSERVER_ENABLE_THEMING', 'true')) else '1'
+        options['disable full window drag:i'] = '0' if is_true(
+            os.getenv('JUMPSERVER_ENABLE_FULL_WINDOW_DRAG', 'true')) else '1'
+        options['allow font smoothing:i'] = '1' if is_true(
+            os.getenv('JUMPSERVER_ENABLE_FONT_SMOOTHING', 'true')) else '0'
+        options['allow desktop composition:i'] = '1' if is_true(
+            os.getenv('JUMPSERVER_ENABLE_DESKTOP_COMPOSITION', 'true')) else '0'
+        options['disable menu anims:i'] = '0' if is_true(
+            os.getenv('JUMPSERVER_ENABLE_MENU_ANIMATIONS', 'true')) else '1'
+
         content = ''
         for k, v in options.items():
             content += f'{k}:{v}\n'
